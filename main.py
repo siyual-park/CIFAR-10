@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     batch_size = 32
     num_classes = 10
-    epochs = 2
+    epochs = 100
 
     model = create_model(num_classes)
 
