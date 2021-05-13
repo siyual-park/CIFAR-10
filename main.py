@@ -9,12 +9,12 @@ def create_model(num_classes: int) -> tf.keras.models.Sequential:
         tf.keras.layers.Conv2D(32, 3, padding='same', input_shape=x_train.shape[1:], activation='relu'),
         tf.keras.layers.Conv2D(32, 3, activation='relu'),
         tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Dropout(0.25),
+        tf.keras.layers.Dropout(0.5),
 
         tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
         tf.keras.layers.Conv2D(64, 3, activation='relu'),
         tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Dropout(0.25),
+        tf.keras.layers.Dropout(0.5),
 
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(512, activation='relu'),
@@ -77,10 +77,22 @@ if __name__ == '__main__':
 
     model = create_model(num_classes)
 
-    history = model.fit(
-        x_train,
-        y_train,
-        batch_size=batch_size,
+    datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+        featurewise_center=False,
+        samplewise_center=False,
+        featurewise_std_normalization=False,
+        samplewise_std_normalization=False,
+        zca_whitening=False,
+        rotation_range=0,
+        width_shift_range=0.1,
+        height_shift_range=0.1,
+        horizontal_flip=True,
+        vertical_flip=False
+    )
+    datagen.fit(x_train)
+
+    history = model.fit_generator(
+        datagen.flow(x_train, y_train, batch_size=batch_size),
         epochs=epochs,
         validation_data=(x_val, y_val)
     )
